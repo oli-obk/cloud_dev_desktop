@@ -29,6 +29,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .next()
         .expect("should have passed a username argument");
 
+    // Yes there is a github user called "root",
+    // no it's not an official one by github.
+    assert_ne!(username, "root", "sorry bud, not happening");
+
     let all = reqwest::blocking::get(TEAM_URL)?.json::<All>()?;
     for person in all.members {
         if person.github == username {

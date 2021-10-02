@@ -1,6 +1,9 @@
 const TEAM_URL: &str = "https://team-api.infra.rust-lang.org/v1/teams/all.json";
 
 use serde::Deserialize;
+use eyre::*;
+use std::process::Command;
+use std::process::Output;
 
 #[derive(Deserialize)]
 struct All {
@@ -12,35 +15,31 @@ struct Person {
     github: String,
 }
 
-fn cmd(cmd: &str, args: &[&str]) -> Result<bool, Box<dyn std::error::Error>> {
-    use std::process::Command;
-    use std::process::Stdio;
-    Ok(Command::new(cmd)
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
+fn cmd(cmd: &str, args: &[&str]) -> std::io::Result<Output> {
+    Command::new(cmd)
         .args(args)
-        .status()?
-        .success())
+        .output()
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<()> {
     let username = std::env::args()
         .skip(1)
         .next()
-        .expect("should have passed a username argument");
-
-    // Yes there is a github user called "root",
-    // no it's not an official one by github.
-    assert_ne!(username, "root", "sorry bud, not happening");
+        .ok_or_else(|| eyre!("should have passed a username argument"))?;
 
     let all = reqwest::blocking::get(TEAM_URL)?.json::<All>()?;
     for person in all.members {
         if person.github == username {
             // Check if user exists
-            if !cmd("id", &[&username])? {
+            let id = cmd("id", &[&username])?;
+            if id.status.success() {
+                let id = String::from_utf8(id.stdout)?;
+                let id: u64 = id.parse()?;
+                ensure!(id > 1000, "cannot login with system user");
+            } else {
                 // If user does not exist, create it
-                assert!(
-                    cmd("useradd", &["--create-home", &username])?,
+                ensure!(
+                    cmd("useradd", &["--create-home", &username])?.status.success(),
                     "failed to create user"
                 );
             }
@@ -51,5 +50,5 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             return Ok(());
         }
     }
-    panic!("user not found");
+    bail!("user not found");
 }

@@ -1,0 +1,10 @@
+[package]
+authors = ["Oli Scherer <github35764891676564198441@oli-obk.de>"]
+edition = "2018"
+name = "team_login"
+version = "0.1.0"
+
+[dependencies]
+serde_json = "1.0.68"
+serde = { version = "1.0", features = ["derive"] }
+reqwest = { version = "0.11", features = ["blocking", "json"] }

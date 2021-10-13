@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -ex
+
 # In Rust We Trust
 sudo apt install cargo
 

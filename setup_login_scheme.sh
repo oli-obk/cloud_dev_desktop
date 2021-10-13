@@ -3,7 +3,7 @@
 set -ex
 
 # In Rust We Trust
-sudo apt install cargo
+sudo apt install cargo pkg-config
 
 # Build login program
 cd team_login

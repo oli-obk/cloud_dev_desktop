@@ -12,7 +12,7 @@ cd ..
 
 # Set up the auto-user creation
 sudo cp team_login/target/debug/cronjob /etc/cron.create_all_team_users
-sudo cat crontab_append >> /etc/crontab
+sudo cp crontab_append /etc/cron.d/create_all_team_users
 
 # Set up the auto-login via ssh
 sudo cp team_login/target/debug/team_login /etc/ssh/team_login

@@ -16,7 +16,7 @@ sudo cp crontab_append /etc/cron.d/create_all_team_users
 
 # Set up the auto-login via ssh
 sudo cp team_login/target/debug/team_login /etc/ssh/team_login
-sudo cat sshd_append >> /etc/sshd_config
+sudo cp sshd_append /etc/sshd/sshd_config.d/github_team_login
 
 # The files that initially appear in a user's home dir
 sudo cp skel/* /etc/skel/

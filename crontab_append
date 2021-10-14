@@ -1,1 +1,1 @@
-*/5 * * * * /etc/cron.create_all_team_users
+*/5 * * * * root /etc/cron.create_all_team_users

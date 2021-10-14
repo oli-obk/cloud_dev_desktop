@@ -11,13 +11,8 @@ cargo build --all
 cd ..
 
 # Set up the auto-user creation
-sudo cp team_login/target/debug/cronjob /etc/cron.create_all_team_users
-sudo cp crontab_append /etc/cron.d/create_all_team_users
-
-# Set up the auto-login via ssh
-sudo cp team_login/target/debug/team_login /etc/ssh/team_login
-sudo cp sshd_append /etc/sshd/sshd_config.d/github_team_login
-sudo service sshd restart
+sudo cp team_login/target/debug/team_login /etc/cron.team_login
+sudo cp crontab_append /etc/cron.d/team_login
 
 # The files that initially appear in a user's home dir
 sudo cp skel/* /etc/skel/

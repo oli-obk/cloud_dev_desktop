@@ -22,28 +22,31 @@ fn cmd(cmd: &str, args: &[&str]) -> std::io::Result<Output> {
 }
 
 fn main() -> Result<()> {
-    let username = std::env::args()
-        .skip(1)
-        .next()
-        .ok_or_else(|| eyre!("should have passed a username argument"))?;
-
     let all = reqwest::blocking::get(TEAM_URL)?.json::<All>()?;
     for person in all.members {
-        if person.github == username {
-            // Check if user exists
-            let id = cmd("id", &[&username])?;
-            if id.status.success() {
-                // Check that we are trying to login with a regular user.
-                let id = String::from_utf8(id.stdout)?;
-                let id: u64 = id.parse()?;
-                ensure!(id > 1000, "cannot login via github with system user");
-            }
-            // Get the keys the user added to their github account
-            let keys =
-                reqwest::blocking::get(format!("https://github.com/{}.keys", username))?.text()?;
-            println!("{}", keys);
-            return Ok(());
+        // Get the keys the user added to their github account.
+        // Do this every time the cronjob runs so that they get their new keys if necessary.
+        let keys =
+            reqwest::blocking::get(format!("https://github.com/{}.keys", person.github))?.text()?;
+        std::fs::write(format!("/etc/ssh/authorized_keys/{}", person.github), keys)?;
+
+        // Check if user exists
+        let id = cmd("id", &[&person.github])?;
+        if id.status.success() {
+            continue;
         }
+
+        // If user does not exist, create it
+        ensure!(
+            cmd("useradd", &["--create-home", &person.github])?.status.success(),
+            "failed to create user"
+        );
+
+        // Get them ssh access
+        ensure!(
+            cmd("usermod", &["-a", "-G", "allow-ssh", &person.github])?.status.success(),
+            "failed to give user ssh access"
+        );
     }
     bail!("user not found");
 }

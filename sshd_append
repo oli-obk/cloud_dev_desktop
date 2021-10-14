@@ -1,2 +1,0 @@
-AuthorizedKeysCommand   /etc/sshd/team_login
-AuthorizedKeysCommandUser root

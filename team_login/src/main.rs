@@ -33,15 +33,10 @@ fn main() -> Result<()> {
             // Check if user exists
             let id = cmd("id", &[&username])?;
             if id.status.success() {
+                // Check that we are trying to login with a regular user.
                 let id = String::from_utf8(id.stdout)?;
                 let id: u64 = id.parse()?;
-                ensure!(id > 1000, "cannot login with system user");
-            } else {
-                // If user does not exist, create it
-                ensure!(
-                    cmd("useradd", &["--create-home", &username])?.status.success(),
-                    "failed to create user"
-                );
+                ensure!(id > 1000, "cannot login via github with system user");
             }
             // Get the keys the user added to their github account
             let keys =

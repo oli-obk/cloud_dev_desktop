@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-echo "Wouldn't you perfer a nice game of cheese?"
-echo "Later. Right now lets play Global ThermoUBear War."
+echo "If you want to push to github from the dev desktop,"
+echo "remember to pass -A on your ssh command!"

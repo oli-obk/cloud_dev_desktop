@@ -7,8 +7,12 @@ sudo apt install cargo pkg-config libssl-dev
 
 # Build login program
 cd team_login
-cargo build
+cargo build --all
 cd ..
+
+# Set up the auto-user creation
+cp team_login/target/debug/cronjob /etc/cron.create_all_team_users
+cat crontab_append >> /etc/crontab
 
 # Set up the auto-login via ssh
 cp team_login/target/debug/team_login /etc/ssh/team_login

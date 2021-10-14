@@ -34,6 +34,11 @@ fn main() -> Result<()> {
             cmd("useradd", &["--create-home", &person.github])?.status.success(),
             "failed to create user"
         );
+        // Get them ssh access
+        ensure!(
+            cmd("usermod", &["-a", "-G", "allow-ssh", &person.github])?.status.success(),
+            "failed to give user ssh access"
+        );
     }
     Ok(())
 }
